@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RTX Store | Catálogo de veículos virtuais</title>
+<link rel="icon" href="RTX.png">
+<style>
+:root{
+  --bg:#141313; --bg2:#1d1c1b; --line:#2e2c2a;
+  --green:#0b9d05; --green-hi:#12c70b; --text:#e3e3e3; --muted:#9a9794;
+  --display:"Arial Black","Segoe UI Black",Impact,system-ui,sans-serif;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--body);line-height:1.5;min-height:100vh}
+:focus-visible{outline:3px solid var(--green-hi);outline-offset:2px}
+.wrap{max-width:1100px;margin:0 auto;padding:0 20px}
+
+.hero{border-bottom:1px solid var(--line);background:linear-gradient(180deg,#2a2827 0,var(--bg) 100%)}
+.hero .wrap{display:flex;align-items:center;gap:28px;padding-top:28px;padding-bottom:28px}
+.hero img{width:150px;height:150px;border-radius:14px;flex:none}
+.hero h1{font-family:var(--display);font-style:italic;font-size:clamp(2rem,6vw,3.6rem);line-height:1;letter-spacing:-.02em}
+.hero h1 b{color:var(--green)}
+.hero p{color:var(--muted);margin-top:10px;max-width:44ch}
+
+.bar{position:sticky;top:0;z-index:5;background:rgba(20,19,19,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.bar .wrap{display:flex;flex-wrap:wrap;gap:10px;padding-top:12px;padding-bottom:12px;align-items:center}
+.chips{display:flex;flex-wrap:wrap;gap:8px;flex:1}
+.chip{font:italic 800 .9rem var(--body);color:var(--text);background:var(--bg2);border:1px solid var(--line);padding:8px 18px;cursor:pointer;transform:skewX(-10deg);transition:background .15s,border-color .15s}
+.chip > span{display:inline-block;transform:skewX(10deg)}
+.chip:hover{border-color:var(--green)}
+.chip[aria-pressed="true"]{background:var(--green);border-color:var(--green);color:#fff}
+#busca{background:var(--bg2);border:1px solid var(--line);color:var(--text);padding:10px 14px;font:inherit;min-width:200px;border-radius:4px}
+#busca::placeholder{color:var(--muted)}
+
+main{padding:28px 0 60px}
+.count{color:var(--muted);font-size:.9rem;margin-bottom:16px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:18px}
+.card{background:var(--bg2);border:1px solid var(--line);display:flex;flex-direction:column;overflow:hidden;cursor:pointer;clip-path:polygon(0 0,calc(100% - 22px) 0,100% 22px,100% 100%,0 100%)}
+.card:hover{border-color:var(--green)}
+.thumb{aspect-ratio:16/10;background:linear-gradient(135deg,#0b3d09,#141313 70%);display:grid;place-items:center;position:relative;overflow:hidden}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.thumb .ph{font-size:3.2rem;opacity:.85}
+.tag{position:absolute;left:0;bottom:0;background:var(--green);color:#fff;font:italic 800 .75rem var(--body);padding:4px 12px 4px 10px}
+.info{padding:14px 16px 16px;display:flex;flex-direction:column;gap:6px;flex:1}
+.info h2{font-family:var(--display);font-style:italic;font-size:1.15rem;line-height:1.2}
+.info p{color:var(--muted);font-size:.9rem;flex:1;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.price{font-family:var(--display);font-style:italic;font-size:1.5rem;color:var(--green-hi);margin-top:6px}
+.buy{display:block;text-align:center;text-decoration:none;font:italic 800 1rem var(--body);background:var(--green);color:#fff;padding:11px;margin-top:8px;transition:background .15s}
+.buy:hover{background:var(--green-hi)}
+.buy[hidden]{display:none}
+.fim{grid-column:1/-1;text-align:center;padding:34px 16px 6px;margin-top:10px;border-top:1px dashed var(--line);font-family:var(--display);font-style:italic;font-size:1.3rem}
+.fim.breve{border-top:0;font-size:1.8rem;color:var(--green-hi);padding:60px 0}
+.fim .buy{display:inline-block;margin-top:14px;padding:11px 28px;font-size:1rem}
+.empty,.erro{grid-column:1/-1;text-align:center;color:var(--muted);padding:40px 0}
+.erro{color:#ff8a80}
+
+/* tela cheia */
+dialog#modal{position:fixed;inset:0;width:100vw;height:100vh;max-width:none;max-height:none;margin:0;padding:0;border:0;background:var(--bg);color:var(--text)}
+dialog#modal::backdrop{background:#000}
+dialog#modal[open]{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(300px,1fr)}
+.m-media{background:linear-gradient(135deg,#0b3d09,#0e0e0e 75%);position:relative;display:grid;grid-template-rows:minmax(0,1fr) auto;overflow:hidden}
+.m-stage{display:grid;place-items:center;min-height:0;padding:12px}
+.m-stage img{max-width:100%;max-height:calc(100vh - 120px);object-fit:contain;display:block}
+.nav{position:absolute;top:50%;transform:translateY(-50%);width:48px;height:64px;border:1px solid var(--line);background:rgba(20,19,19,.85);color:var(--text);font:800 2rem var(--body);cursor:pointer;z-index:1}
+.nav:hover{background:var(--green);border-color:var(--green)}
+.nav.prev{left:10px}.nav.next{right:10px}
+.nav[hidden],.thumbs[hidden],.m-count[hidden]{display:none}
+.thumbs{display:flex;gap:8px;justify-content:center;overflow-x:auto;padding:10px 12px 14px}
+.thumbs button{flex:none;width:72px;height:52px;padding:0;border:2px solid var(--line);background:#000;cursor:pointer;opacity:.7}
+.thumbs button img{width:100%;height:100%;object-fit:cover;display:block}
+.thumbs button[aria-current="true"]{border-color:var(--green-hi);opacity:1}
+.m-count{position:absolute;top:18px;left:18px;background:rgba(20,19,19,.85);padding:4px 12px;font:italic 800 .85rem var(--body)}
+.cnt{position:absolute;right:8px;bottom:8px;background:rgba(0,0,0,.72);color:#fff;font-size:.75rem;padding:2px 8px;border-radius:3px}
+.m-media .ph{font-size:clamp(6rem,20vw,14rem)}
+.m-side{padding:56px 36px 36px;display:flex;flex-direction:column;gap:14px;overflow:auto;border-left:1px solid var(--line)}
+.m-side .tag{position:static;align-self:flex-start;transform:skewX(-10deg)}
+.m-side h2{font-family:var(--display);font-style:italic;font-size:clamp(1.8rem,3.4vw,2.8rem);line-height:1.05}
+.m-side p{color:var(--muted);font-size:1.05rem;max-width:52ch;white-space:pre-line}
+.m-side .price{font-size:2.4rem;margin-top:auto}
+#fechar{position:absolute;top:14px;right:14px;z-index:2;width:46px;height:46px;border:1px solid var(--line);background:rgba(20,19,19,.85);color:var(--text);font:800 1.4rem var(--body);cursor:pointer;transform:skewX(-10deg)}
+#fechar:hover{background:var(--green);border-color:var(--green)}
+
+footer{border-top:1px solid var(--line);color:var(--muted);text-align:center;padding:24px 20px;font-size:.85rem}
+
+@media (max-width:760px){
+  .hero .wrap{flex-direction:column;text-align:center}
+  .hero img{width:120px;height:120px}
+  #busca{width:100%}
+  dialog#modal[open]{display:flex;flex-direction:column;overflow:auto}
+  .m-media{min-height:50vh;flex:none}
+  .m-stage img{max-height:42vh}
+  .m-side{border-left:0;padding:24px 20px 32px;overflow:visible}
+  .m-side .price{margin-top:6px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <img src="RTX.png" alt="Logo da RTX Store">
+    <div>
+      <h1><b>RTX</b> STORE</h1>
+      <p>Veículos virtuais prontos para entrega. Escolha o seu e peça pelo Discord.</p>
+    </div>
+  </div>
+</header>
+
+<nav class="bar" aria-label="Filtros do catálogo">
+  <div class="wrap">
+    <div class="chips" id="chips"></div>
+    <input id="busca" type="search" placeholder="Buscar veículo" aria-label="Buscar veículo">
+  </div>
+</nav>
+
+<main class="wrap">
+  <p class="count" id="count" aria-live="polite"></p>
+  <div class="grid" id="grid"></div>
+</main>
+
+<footer>RTX Store. Itens digitais, entrega combinada pelo Discord.</footer>
+
+<dialog id="modal" aria-labelledby="m-nome">
+  <button id="fechar" aria-label="Fechar">✕</button>
+  <div class="m-media">
+    <div class="m-stage" id="m-stage"></div>
+    <span class="m-count" id="m-count" hidden></span>
+    <button class="nav prev" id="m-prev" aria-label="Foto anterior" hidden>‹</button>
+    <button class="nav next" id="m-next" aria-label="Próxima foto" hidden>›</button>
+    <div class="thumbs" id="m-thumbs" hidden></div>
+  </div>
+  <div class="m-side">
+    <span class="tag" id="m-cat"></span>
+    <h2 id="m-nome"></h2>
+    <p id="m-desc"></p>
+    <div class="price" id="m-preco"></div>
+    <a class="buy" id="m-buy" target="_blank" rel="noopener">Pedir pelo Discord</a>
+  </div>
+</dialog>
+
+<!-- =====================================================================
+     COLE O JSON AQUI (entre as duas tags abaixo, apagando o exemplo).
+     Pode ser uma lista [ {...}, {...} ] ou um objeto com a lista dentro
+     (ex.: {"veiculos":[ ... ]}).
+     Cada item aceita estes campos (qualquer um dos nomes funciona):
+       nome / name / title        -> nome do veículo
+       categoria / category / tipo -> Carros, Ônibus, Caminhões ou Construções
+       preco / price / valor      -> número (ex.: 89.9) ou texto ("R$ 89,90")
+       desc / descricao / description -> texto
+       img / imagem / image / foto / image_url -> link ou caminho da foto principal
+       imagens / images / fotos / galeria / attachments -> VÁRIAS fotos: lista de links
+                                  (["a.jpg","b.jpg"]) ou lista de objetos com "url";
+                                  a tela cheia mostra setas e miniaturas
+       link / discord / mensagem / message_url / jump_url / url
+                                  -> link da mensagem do Discord (abre ao clicar em "Pedir")
+       (ou, no lugar do link: guild_id + channel_id + message_id, que o site monta o link)
+     ===================================================================== -->
+<script id="dados-json" type="application/json">
+[
+  {"nome":"Esportivo Turbo GT","categoria":"Carros","preco":89.9,"desc":"Rápido, com visual agressivo e acabamento completo.","img":"","link":"https://discord.com/channels/ID_SERVIDOR/ID_CANAL/ID_MENSAGEM"},
+  {"nome":"Sedan Executivo","categoria":"Carros","preco":39.9,"desc":"Elegante e confortável, ideal para o dia a dia.","img":"","link":"https://discord.com/channels/ID_SERVIDOR/ID_CANAL/ID_MENSAGEM"}
+]
+</script>
+
+<script>
+/* ============ EDITE AQUI ============ */
+// Link do seu servidor (convite). Aparece no botão "Fazer encomenda" no fim da lista de Carros.
+const DISCORD_SERVIDOR = "https://discord.gg/SEU_CONVITE";
+
+// Link de reserva usado quando um veículo não tem link próprio. Deixe "" para esconder o botão nesses casos.
+const DISCORD_PADRAO = "";
+/* ================================== */
+
+const CATS = ["Carros","Ônibus","Caminhões","Construções"];
+const ICONE = {"Carros":"🚗","Ônibus":"🚌","Caminhões":"🚚","Construções":"🏗️"};
+const $ = id => document.getElementById(id);
+const brl = n => n.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+const semAcento = s => String(s).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim();
+const pick = (o,...ks) => { for (const k of ks) if (o[k] != null && o[k] !== "") return o[k]; return ""; };
+
+function normCat(c){
+  const s = semAcento(c);
+  if (s.startsWith("carro") || s === "carro") return "Carros";
+  if (s.startsWith("onibus") || s.startsWith("bus")) return "Ônibus";
+  if (s.startsWith("caminh") || s.startsWith("truck")) return "Caminhões";
+  if (s.startsWith("constru") || s.startsWith("maquina")) return "Construções";
+  return String(c).trim() || "Outros";
+}
+function normPreco(p){
+  if (typeof p === "number") return p;
+  let s = String(p).replace(/[^\d,.-]/g,"");
+  if (s.includes(",")) s = s.replace(/\./g,"").replace(",",".");
+  const n = parseFloat(s);
+  return isNaN(n) ? 0 : n;
+}
+
+function coletarImgs(o){
+  const lista = [];
+  const add = x => {
+    if (!x) return;
+    if (Array.isArray(x)) return x.forEach(add);
+    if (typeof x === "object") return add(x.url || x.proxy_url || x.src);
+    String(x).split(/[\s,]+/).forEach(u => { if (u) lista.push(u); });
+  };
+  add(pick(o,"img","imagem","image","foto","image_url"));
+  add(pick(o,"imagens","images","fotos","galeria","gallery","anexos","attachments"));
+  return [...new Set(lista)];
+}
+
+function montarLink(o){
+  const l = String(pick(o,"link","discord","mensagem","message_url","message_link","jump_url","url"));
+  if (/^https?:\/\//i.test(l)) return l;
+  const g = pick(o,"guild_id","servidor_id"), ch = pick(o,"channel_id","canal_id"), m = pick(o,"message_id","mensagem_id","id");
+  if (g && ch && m) return "https://discord.com/channels/" + g + "/" + ch + "/" + m;
+  return "";
+}
+
+let CARROS = [];
+try {
+  let raw = JSON.parse($("dados-json").textContent);
+  if (!Array.isArray(raw)) raw = Object.values(raw).find(Array.isArray) || [];
+  CARROS = raw.map(o => ({
+    nome: String(pick(o,"nome","name","title") || "Sem nome"),
+    categoria: normCat(pick(o,"categoria","category","tipo","type")),
+    preco: normPreco(pick(o,"preco","preço","price","valor")),
+    desc: String(pick(o,"desc","descricao","descrição","description")),
+    imgs: coletarImgs(o),
+    link: montarLink(o)
+  }));
+} catch (e) {
+  $("grid").innerHTML = '<p class="erro">O JSON colado está com erro de formatação. Confira vírgulas, aspas e colchetes.</p>';
+}
+
+const extras = [...new Set(CARROS.map(c => c.categoria))].filter(c => !CATS.includes(c));
+const cats = ["Todos", ...CATS, ...extras];
+CARROS.forEach(c => { c.img = c.imgs[0] || ""; });
+let cat = "Todos";
+
+cats.forEach(c => {
+  const b = document.createElement("button");
+  b.className = "chip";
+  b.setAttribute("aria-pressed", c === cat);
+  b.innerHTML = "<span></span>";
+  b.firstChild.textContent = c;
+  b.onclick = () => { cat = c; [...$("chips").children].forEach(x => x.setAttribute("aria-pressed", x === b)); render(); };
+  $("chips").appendChild(b);
+});
+
+const destino = c => c.link || DISCORD_PADRAO;
+
+function midia(c, el, imgClass){
+  el.innerHTML = "";
+  if (c.img){
+    const i = document.createElement("img");
+    i.alt = c.nome; i.src = c.img;
+    if (imgClass) i.loading = "lazy";
+    i.onerror = () => { el.innerHTML = '<span class="ph" aria-hidden="true">' + (ICONE[c.categoria] || "🚗") + '</span>'; };
+    el.appendChild(i);
+  } else {
+    el.innerHTML = '<span class="ph" aria-hidden="true">' + (ICONE[c.categoria] || "🚗") + '</span>';
+  }
+}
+
+function render(){
+  if (!CARROS.length && $("grid").querySelector(".erro")) return;
+  const q = semAcento($("busca").value);
+  const lista = CARROS.filter(c => (cat === "Todos" || c.categoria === cat) && semAcento(c.nome).includes(q));
+  $("count").textContent = lista.length + (lista.length === 1 ? " veículo" : " veículos");
+  const g = $("grid"); g.innerHTML = "";
+  const nota = notaFinal(q);
+  if (!lista.length){
+    if (!(nota && nota.classList.contains("breve")))
+      g.innerHTML = '<p class="empty">Nenhum veículo encontrado. Tente outra busca ou categoria.</p>';
+    if (nota) g.appendChild(nota);
+    return;
+  }
+  lista.forEach(c => {
+    const el = document.createElement("article");
+    el.className = "card"; el.tabIndex = 0; el.setAttribute("role","button");
+    el.setAttribute("aria-label","Ver " + c.nome + " em tela cheia");
+    el.innerHTML = '<div class="thumb"></div>' +
+      '<div class="info"><h2></h2><p></p><div class="price"></div>' +
+      '<a class="buy" target="_blank" rel="noopener">Pedir pelo Discord</a></div>';
+    midia(c, el.querySelector(".thumb"), true);
+    const t = document.createElement("span");
+    t.className = "tag"; t.textContent = c.categoria;
+    el.querySelector(".thumb").appendChild(t);
+    if (c.imgs.length > 1){
+      const n = document.createElement("span");
+      n.className = "cnt"; n.textContent = "📷 " + c.imgs.length;
+      el.querySelector(".thumb").appendChild(n);
+    }
+    el.querySelector("h2").textContent = c.nome;
+    el.querySelector("p").textContent = c.desc;
+    el.querySelector(".price").textContent = brl(c.preco);
+    const a = el.querySelector(".buy");
+    if (destino(c)) a.href = destino(c); else a.hidden = true;
+    a.addEventListener("click", e => e.stopPropagation());
+    el.addEventListener("click", () => abrir(c));
+    el.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); abrir(c); } });
+    g.appendChild(el);
+  });
+  if (nota) g.appendChild(nota);
+}
+
+function notaFinal(q){
+  const d = document.createElement("div");
+  d.className = "fim";
+  if (cat === "Carros" || cat === "Todos"){
+    d.textContent = "Não achou o que procurava? Tente fazer uma encomenda!";
+    if (DISCORD_SERVIDOR){
+      const a = document.createElement("a");
+      a.className = "buy"; a.target = "_blank"; a.rel = "noopener";
+      a.href = DISCORD_SERVIDOR; a.textContent = "Fazer encomenda";
+      d.appendChild(document.createElement("br")); d.appendChild(a);
+    }
+    return d;
+  }
+  if (["Ônibus","Caminhões","Construções"].includes(cat) && !q){
+    d.className = "fim breve"; d.textContent = "Em breve";
+    return d;
+  }
+  return null;
+}
+
+const modal = $("modal");
+const gal = {c:null, i:0};
+function mostrar(i){
+  const imgs = gal.c.imgs, st = $("m-stage");
+  const ph = '<span class="ph" aria-hidden="true">' + (ICONE[gal.c.categoria] || "🚗") + '</span>';
+  if (!imgs.length){ st.innerHTML = ph; return; }
+  gal.i = (i + imgs.length) % imgs.length;
+  st.innerHTML = "";
+  const im = document.createElement("img");
+  im.alt = gal.c.nome + " (foto " + (gal.i + 1) + " de " + imgs.length + ")";
+  im.src = imgs[gal.i];
+  im.onerror = () => { st.innerHTML = ph; };
+  st.appendChild(im);
+  [...$("m-thumbs").children].forEach((b, k) => b.setAttribute("aria-current", k === gal.i));
+  $("m-count").textContent = (gal.i + 1) + " / " + imgs.length;
+}
+$("m-prev").onclick = () => mostrar(gal.i - 1);
+$("m-next").onclick = () => mostrar(gal.i + 1);
+modal.addEventListener("keydown", e => {
+  if (e.key === "ArrowLeft") mostrar(gal.i - 1);
+  if (e.key === "ArrowRight") mostrar(gal.i + 1);
+});
+let x0 = null;
+$("m-stage").addEventListener("touchstart", e => { x0 = e.touches[0].clientX; }, {passive:true});
+$("m-stage").addEventListener("touchend", e => {
+  if (x0 === null) return;
+  const dx = e.changedTouches[0].clientX - x0; x0 = null;
+  if (Math.abs(dx) > 50) mostrar(gal.i + (dx < 0 ? 1 : -1));
+});
+function abrir(c){
+  gal.c = c;
+  const th = $("m-thumbs"); th.innerHTML = "";
+  c.imgs.forEach((u, i) => {
+    const b = document.createElement("button");
+    b.setAttribute("aria-label", "Ver foto " + (i + 1));
+    const im = document.createElement("img"); im.alt = ""; im.src = u;
+    b.appendChild(im); b.onclick = () => mostrar(i);
+    th.appendChild(b);
+  });
+  const varias = c.imgs.length > 1;
+  th.hidden = !varias; $("m-prev").hidden = !varias; $("m-next").hidden = !varias; $("m-count").hidden = !varias;
+  mostrar(0);
+  $("m-cat").textContent = c.categoria;
+  $("m-nome").textContent = c.nome;
+  $("m-desc").textContent = c.desc || "";
+  $("m-preco").textContent = brl(c.preco);
+  const b = $("m-buy");
+  if (destino(c)) { b.href = destino(c); b.hidden = false; } else b.hidden = true;
+  modal.showModal();
+  document.body.style.overflow = "hidden";
+}
+function fechar(){ modal.close(); }
+$("fechar").onclick = fechar;
+modal.addEventListener("close", () => { document.body.style.overflow = ""; });
+$("busca").addEventListener("input", render);
+render();
+</script>
+</body>
+</html>

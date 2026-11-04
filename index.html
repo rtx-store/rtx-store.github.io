@@ -91,6 +91,64 @@ dialog#modal[open]{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(300
 
 footer{border-top:1px solid var(--line);color:var(--muted);text-align:center;padding:24px 20px;font-size:.85rem}
 
+/* ===== animações ===== */
+@keyframes entra{from{opacity:0;transform:translateY(26px) skewY(2deg)}to{opacity:1;transform:none}}
+@keyframes entra2{from{opacity:0;transform:translateX(26px)}to{opacity:1;transform:none}}
+@keyframes dirige{0%{opacity:0;transform:translateX(-90px) rotate(-8deg)}60%{opacity:1;transform:translateX(8px) rotate(1deg)}100%{opacity:1;transform:none}}
+@keyframes revela{from{clip-path:inset(0 100% 0 -20px);transform:translateX(-24px)}to{clip-path:inset(0 -24px 0 -20px);transform:none}}
+@keyframes sobe{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes varre{from{transform:translateX(-120%)}to{transform:translateX(420%)}}
+@keyframes abre{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:none}}
+@keyframes fundo{from{opacity:0}to{opacity:1}}
+@keyframes troca{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:none}}
+@keyframes pulsa{50%{opacity:.5}}
+@keyframes balanca{30%{transform:rotate(-8deg) scale(1.08)}60%{transform:rotate(6deg) scale(1.08)}}
+
+.hero{position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;left:0;bottom:0;height:3px;width:25%;background:linear-gradient(90deg,transparent,var(--green-hi),transparent);animation:varre 4.5s ease-in-out infinite}
+.hero img{animation:dirige .9s cubic-bezier(.2,.9,.25,1) both}
+.hero h1{animation:revela .8s .25s cubic-bezier(.2,.8,.2,1) both}
+.hero p{animation:sobe .6s .65s both}
+.bar{animation:sobe .5s .8s both}
+
+.card{transition:transform .25s cubic-bezier(.2,.8,.2,1),border-color .2s;animation:entra .55s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i,0) * 70ms)}
+.card:hover,.card:focus-visible{transform:translateY(-6px)}
+.card:active{transform:translateY(-2px) scale(.99)}
+.grid.sem-anim .card{animation:none}
+.thumb img{transition:transform .6s cubic-bezier(.2,.8,.2,1)}
+.card:hover .thumb img{transform:scale(1.08)}
+.card:hover .thumb .ph{animation:balanca .7s}
+.tag{transition:padding .2s}
+.card:hover .tag{padding-right:20px}
+
+.chip:active{transform:skewX(-10deg) scale(.94)}
+.chip[aria-pressed="true"]{animation:abre .25s}
+
+.buy{position:relative;overflow:hidden}
+.buy::after{content:"";position:absolute;top:0;left:-70%;width:45%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.35),transparent);transform:skewX(-20deg);transition:left .6s}
+.buy:hover::after{left:130%}
+.buy:active{transform:scale(.97)}
+
+.fim{animation:sobe .6s .25s both}
+.fim.breve{animation:sobe .6s both,pulsa 2.6s 1s ease-in-out infinite}
+
+dialog#modal[open]{animation:abre .35s cubic-bezier(.2,.8,.2,1)}
+dialog#modal[open]::backdrop{animation:fundo .3s}
+.m-side > *{animation:entra2 .5s cubic-bezier(.2,.8,.2,1) both}
+.m-side > *:nth-child(1){animation-delay:.12s}
+.m-side > *:nth-child(2){animation-delay:.2s}
+.m-side > *:nth-child(3){animation-delay:.28s}
+.m-side > *:nth-child(4){animation-delay:.36s}
+.m-side > *:nth-child(5){animation-delay:.42s}
+.m-side > *:nth-child(6){animation-delay:.48s}
+.m-stage img{animation:troca .35s cubic-bezier(.2,.8,.2,1)}
+.thumbs button{transition:opacity .2s,border-color .2s,transform .2s}
+.thumbs button:hover{opacity:1;transform:translateY(-3px)}
+.nav{transition:background .2s,border-color .2s,transform .15s}
+.nav:active{transform:translateY(-50%) scale(.92)}
+#fechar{transition:background .2s,border-color .2s,transform .2s}
+#fechar:hover{transform:skewX(-10deg) rotate(90deg)}
+
 @media (max-width:760px){
   .hero .wrap{flex-direction:column;text-align:center}
   .hero img{width:120px;height:120px}
@@ -101,7 +159,7 @@ footer{border-top:1px solid var(--line);color:var(--muted);text-align:center;pad
   .m-side{border-left:0;padding:24px 20px 32px;overflow:visible}
   .m-side .price{margin-top:6px}
 }
-@media (prefers-reduced-motion:reduce){*{transition:none!important}html{scroll-behavior:auto}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}html{scroll-behavior:auto}}
 </style>
 </head>
 <body>
@@ -171,8 +229,8 @@ footer{border-top:1px solid var(--line);color:var(--muted);text-align:center;pad
      ===================================================================== -->
 <script id="dados-json" type="application/json">
 [
-  {"nome":"2027 Volkswagen Tiguan R-Line","categoria":"Carros","preco":45.00,"robux":"350","interna":"com","desc":"- Chassi Realista\n- Potência Igual ao Carro Real\n- 100% Texturizado\n- Sistema de cinto avançado: Te prende no carro quando coloca e começa a apitar a partir de 15 KM/H\n- ACC (Cruise Control Adaptativo)\n- AEB (Frenagem Autonoma de Emergencia)\n- Sensor de Estacionamento\n- Modo Comfort e Sport\n- Sistema de trancar avançado: Rebate os retrovisores, módulo de vidros, projetor de porta e liga o farol a noite\n- Rebatimento de retrovisor\n- Teto Solar\n- Som Realista\n- Efeito Realista de Farol\n- Sons iguais a VW da vida real\n- IDA (IA da Volks, peça pra ela contar uma piada, ligar os faróis, mudar para modo sport, ligar ar condicionado, tocar música e abrir os vidros)\n- Painel Digital Funcional\n- Multimidia Funcional\n- Painel de controle das portas e do Ambient Light\n- Portas trancam depois que passa de 15 KM/H\n- 4 Vidros abrem\n- Sistema de alarme: Quando algum Player tenta entrar no motorista, o alarme dispara (pisca os faróis, setas e buzina)\n- Ar condicionado\n- Sistema de Playlist (você pode fazer uma playlist de músicas pelas configurações do painel)\n- Maçaneta puxa (igual quando você abre a porta de um carro de verdade)\n- Com carro trancado, você puxa a maçaneta mas a porta não abre\n- Faróis automatico\n- Porta-Copos abre\n- Model detalhado\n- Tela de boas vindas e de Tchau\n- Volante mexe\n- Suspensão macia e próxima a vida real\n- Sistema de elétrica (quando aperta F, liga apenas a elétrica do carro. Quando aperta S + F, o motor liga)\n- Painel Digital com apresentação quando liga\n- 4 Portas abrem","img":["imagens/img_tiguan.png", "imagens/img_tiguan2.png", "imagens/img_tiguan3.png", "imagens/img_tiguan4.png", "imagens/img_tiguan5.png", "imagens/img_tiguan6.png"] ,"link":"https://discord.com/channels/ID_SERVIDOR/ID_CANAL/ID_MENSAGEM"},
-  {"nome":"2026 Jaecoo J7 SHS","categoria":"Carros","preco":10.00,"robux":"350","interna":"sem","desc":"- Chassi Realista\n- Potência Igual ao Carro Real\n- 100% Texturizado\n- Sistema de Cinto Avançado (Beep ativa apenas quando a electrics está ativa, mostra no painel o icone do cinto e te prende no carro não te deixando sair enquanto não tira o cinto) (B para colocar o cinto)\n- Cruise Control com adaptativo (freia quando o carro da frente está mais devagar)\n- AEB\n- Sensor de estacionamento\n- Modos de condução\n- Sistema de trancar avançado\n- Rebatimento de retrovisor\n- Som Realista\n- Efeito Realista no farol\n- Som de seta e chime igual a Jaecoo da vida real\n- Sistema de teto solar (quando clica no botão uma vez, ele abre pra cima, quando clica mais uma vez, ele abre inteiro)","img":["imagens/img_jaecooj7.png", "imagens/img_jaecooj7_2.png", "imagens/img_jaecooj7_3.png", "imagens/img_jaecooj7_4.png", "imagens/img_jaecooj7_5.png"],"link":"https://discord.com/channels/ID_SERVIDOR/ID_CANAL/ID_MENSAGEM"},
+  {"nome":"2027 Volkswagen Tiguan R-Line","categoria":"Carros","preco":45.00,"robux":"","interna":"com","desc":"- Chassi Realista\n- Potência Igual ao Carro Real\n- 100% Texturizado\n- Sistema de cinto avançado: Te prende no carro quando coloca e começa a apitar a partir de 15 KM/H\n- ACC (Cruise Control Adaptativo)\n- AEB (Frenagem Autonoma de Emergencia)\n- Sensor de Estacionamento\n- Modo Comfort e Sport\n- Sistema de trancar avançado: Rebate os retrovisores, módulo de vidros, projetor de porta e liga o farol a noite\n- Rebatimento de retrovisor\n- Teto Solar\n- Som Realista\n- Efeito Realista de Farol\n- Sons iguais a VW da vida real\n- IDA (IA da Volks, peça pra ela contar uma piada, ligar os faróis, mudar para modo sport, ligar ar condicionado, tocar música e abrir os vidros)\n- Painel Digital Funcional\n- Multimidia Funcional\n- Painel de controle das portas e do Ambient Light\n- Portas trancam depois que passa de 15 KM/H\n- 4 Vidros abrem\n- Sistema de alarme: Quando algum Player tenta entrar no motorista, o alarme dispara (pisca os faróis, setas e buzina)\n- Ar condicionado\n- Sistema de Playlist (você pode fazer uma playlist de músicas pelas configurações do painel)\n- Maçaneta puxa (igual quando você abre a porta de um carro de verdade)\n- Com carro trancado, você puxa a maçaneta mas a porta não abre\n- Faróis automatico\n- Porta-Copos abre\n- Model detalhado\n- Tela de boas vindas e de Tchau\n- Volante mexe\n- Suspensão macia e próxima a vida real\n- Sistema de elétrica (quando aperta F, liga apenas a elétrica do carro. Quando aperta S + F, o motor liga)\n- Painel Digital com apresentação quando liga\n- 4 Portas abrem","img":["imagens/img_tiguan.png", "imagens/img_tiguan2.png", "imagens/img_tiguan3.png", "imagens/img_tiguan4.png", "imagens/img_tiguan5.png", "imagens/img_tiguan6.png"] ,"link":"https://discord.com/channels/ID_SERVIDOR/ID_CANAL/ID_MENSAGEM"},
+  {"nome":"2026 Jaecoo J7 SHS","categoria":"Carros","preco":10.00,"robux":"","interna":"sem","desc":"- Chassi Realista\n- Potência Igual ao Carro Real\n- 100% Texturizado\n- Sistema de Cinto Avançado (Beep ativa apenas quando a electrics está ativa, mostra no painel o icone do cinto e te prende no carro não te deixando sair enquanto não tira o cinto) (B para colocar o cinto)\n- Cruise Control com adaptativo (freia quando o carro da frente está mais devagar)\n- AEB\n- Sensor de estacionamento\n- Modos de condução\n- Sistema de trancar avançado\n- Rebatimento de retrovisor\n- Som Realista\n- Efeito Realista no farol\n- Som de seta e chime igual a Jaecoo da vida real\n- Sistema de teto solar (quando clica no botão uma vez, ele abre pra cima, quando clica mais uma vez, ele abre inteiro)","img":["imagens/img_jaecooj7.png", "imagens/img_jaecooj7_2.png", "imagens/img_jaecooj7_3.png", "imagens/img_jaecooj7_4.png", "imagens/img_jaecooj7_5.png"],"link":"https://discord.com/channels/ID_SERVIDOR/ID_CANAL/ID_MENSAGEM"},
   {"nome":"Em breve mais...","categoria":"Carros","preco":0,"robux":"","interna":"","desc":"em breve","img":"","link":"https://discord.com/channels/ID_SERVIDOR/ID_CANAL/ID_MENSAGEM"}
 ]
 </script>
@@ -180,7 +238,7 @@ footer{border-top:1px solid var(--line);color:var(--muted);text-align:center;pad
 <script>
 /* ============ EDITE AQUI ============ */
 // Link do seu servidor (convite). Aparece no botão "Fazer encomenda" no fim da lista de Carros.
-const DISCORD_SERVIDOR = "https://discord.gg/SEU_CONVITE";
+const DISCORD_SERVIDOR = "https://discord.gg/xxQ6j2ZpVs";
 
 // Link de reserva usado quando um veículo não tem link próprio. Deixe "" para esconder o botão nesses casos.
 const DISCORD_PADRAO = "";
@@ -299,12 +357,13 @@ function midia(c, el, imgClass){
   }
 }
 
-function render(){
+function render(animar = true){
   if (!CARROS.length && $("grid").querySelector(".erro")) return;
   const q = semAcento($("busca").value);
   const lista = CARROS.filter(c => (cat === "Todos" || c.categoria === cat) && semAcento(c.nome).includes(q));
   $("count").textContent = lista.length + (lista.length === 1 ? " veículo" : " veículos");
   const g = $("grid"); g.innerHTML = "";
+  g.classList.toggle("sem-anim", !animar);
   const nota = notaFinal(q);
   if (!lista.length){
     if (!(nota && nota.classList.contains("breve")))
@@ -312,8 +371,9 @@ function render(){
     if (nota) g.appendChild(nota);
     return;
   }
-  lista.forEach(c => {
+  lista.forEach((c, idx) => {
     const el = document.createElement("article");
+    el.style.setProperty("--i", Math.min(idx, 12));
     el.className = "card"; el.tabIndex = 0; el.setAttribute("role","button");
     el.setAttribute("aria-label","Ver " + c.nome + " em tela cheia");
     el.innerHTML = '<div class="thumb"></div>' +
@@ -429,8 +489,8 @@ function abrir(c){
 function fechar(){ modal.close(); }
 $("fechar").onclick = fechar;
 modal.addEventListener("close", () => { document.body.style.overflow = ""; });
-$("busca").addEventListener("input", render);
+$("busca").addEventListener("input", () => render(false));
 render();
 </script>
 </body>
-</html>b
+</html>
